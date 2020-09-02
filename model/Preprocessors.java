@@ -23,7 +23,7 @@ public class Preprocessors {
     private boolean lemmatize = true;
     private boolean normalize = true;
     private boolean splitSentences = true;
-    Preprocessors(){
+    public Preprocessors(){
         stemmer = StemmerFactory.getSAFARImplementation();
         lemmatizer = LemmatizerFactory.getFARASAImplementation();
         sentenceSplitter = SentenceSplitterFactory.getSAFARSentenceSplitterImplementation();
