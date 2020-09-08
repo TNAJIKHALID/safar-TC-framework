@@ -5,7 +5,10 @@ import model.TCModel;
 import util.Utilities;
 import weka.core.Instances;
 
+import java.util.AbstractMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public interface Preprocessing {
     /**
