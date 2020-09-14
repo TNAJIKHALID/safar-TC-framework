@@ -13,52 +13,81 @@ import java.io.IOException;
 import java.util.*;
 
 public abstract class Utilities {
-    public static Map<String,String[]> getData(String dataSetFolderPath){
-        Map<String,String[]> dataSet = new LinkedHashMap<>();
+    /**
+     * Done
+     *
+     * @param dataSetFolderPath
+     * @return
+     */
+    public static Map<String, String[]> getData(String dataSetFolderPath) {
+        Map<String, String[]> dataSet = new LinkedHashMap<>();
         File dir = new File(dataSetFolderPath);
-        if(dir.isDirectory()) {
-            for(File classDirectory : dir.listFiles()) {
-                if(classDirectory.isDirectory()) {
+        if (dir.isDirectory()) {
+            for (File classDirectory : dir.listFiles()) {
+                if (classDirectory.isDirectory()) {
                     List<String> texts = new ArrayList<>();
-                    for(File file : classDirectory.listFiles()){
+                    for (File file : classDirectory.listFiles()) {
                         texts.add(readFile(file));
                     }
-                    dataSet.put(dir.getName(), texts.toArray(new String[texts.size()]));
+                    dataSet.put(classDirectory.getName(), texts.toArray(new String[texts.size()]));
                 }
             }
         } else {
             return null;
         }
-        return  dataSet;
+        return dataSet;
     }
 
-    public static void saveData(String dataSetFolderPath,Map<String,String[]> dataSet){
+    /**
+     * Done
+     *
+     * @param dataSetFolderPath
+     * @param dataSet
+     */
+    public static void saveData(String dataSetFolderPath, Map<String, String[]> dataSet) {
         File dir = new File(dataSetFolderPath);
-        if(!dir.isDirectory()) {
+        if (!dir.isDirectory()) {
             dir.mkdir();
         }
-        for (Map.Entry<String,String[]> entry: dataSet.entrySet()){
+        for (Map.Entry<String, String[]> entry : dataSet.entrySet()) {
             int k = 0;
-            for (String text: entry.getValue()){
-                saveFile(dataSetFolderPath+"\\"+entry.getKey()+"\\"+k+".txt",text);
+            File classDir = new File(dataSetFolderPath + "\\" + entry.getKey());
+            if (!classDir.isDirectory()) {
+                classDir.mkdir();
+            }
+            for (String text : entry.getValue()) {
+                saveFile(dataSetFolderPath + "\\" + entry.getKey() + "\\" + k + ".txt", text);
+                k++;
             }
         }
     }
 
+    /**
+     * Done
+     *
+     * @param path
+     * @param text
+     */
     private static void saveFile(String path, String text) {
         try {
+            File file = new File(path);
+            file.createNewFile();
             FileWriter myWriter = new FileWriter(path);
             myWriter.write(text);
             myWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }    }
+        }
+    }
 
+    /**
+     * Done
+     */
     private static String readFile(File file) {
         String data = "";
         try {
-            File myObj = new File("filename.txt");
-            Scanner myReader = new Scanner(myObj);
+            //File myObj = new File("filename.txt");
+            Scanner myReader = new Scanner(file);
             while (myReader.hasNextLine()) {
                 data += "\n" + myReader.nextLine();
             }
@@ -69,28 +98,43 @@ public abstract class Utilities {
         return data;
     }
 
-    public static Instances getData(Map<String,String[]> data){
+    /**
+     * Done
+     *
+     * @param data
+     * @return
+     */
+    public static Instances getData(Map<String, String[]> data) {
         Instances instances;
-        FastVector textClasses = new FastVector(2);
-        for (Map.Entry<String,String[]> entry: data.entrySet()){
+        FastVector textClasses = new FastVector(data.size());
+        for (Map.Entry<String, String[]> entry : data.entrySet()) {
             textClasses.addElement(entry.getKey());
         }
         Attribute attributeClass = new Attribute("class", textClasses);
-        Attribute attributeText = new Attribute("text",(FastVector) null);
+        Attribute attributeText = new Attribute("text", (FastVector) null);
         // Create list of instances with one element
         FastVector fastVector = new FastVector(2);
-        fastVector.addElement(attributeClass);
         fastVector.addElement(attributeText);
+        fastVector.addElement(attributeClass);
         instances = new Instances("relation", fastVector, 1);
         instances.setClassIndex(0);
-        for (Map.Entry<String,String[]> entry: data.entrySet()){
-            for (String text: entry.getValue()){
-                instances.add(getInstance(text, entry.getKey()));
+        for (Map.Entry<String,String[]> entry : data.entrySet()) {
+            for (String text : entry.getValue()) {
+                double[] instanceValue1 = new double[2];
+                instanceValue1[0] = instances.attribute(0).addStringValue(text);
+                instanceValue1[1] = textClasses.indexOf(entry.getKey());
+                instances.add(new Instance(1.0, instanceValue1));
             }
         }
-        return null;
+        return instances;
     }
 
+    /**
+     * Done
+     *
+     * @param dataSetFolderPath
+     * @return
+     */
     public static Instances getInstances(String dataSetFolderPath) {
         Instances instances = null;
         TextDirectoryLoader loader = new TextDirectoryLoader();
@@ -103,10 +147,18 @@ public abstract class Utilities {
         return instances;
     }
 
-    public static Instance getInstance(String text,String textClass){
-        Instance instance = new Instance(2);
-        instance.setValue(1,text);
-        instance.setValue(0,textClass);
-        return instance;
+    /**
+     * Done
+     *
+     * @param instances
+     * @param text
+     * @param textClass
+     * @return
+     */
+    public static Instance getInstance(Instances instances, String text, String textClass) {
+        double[] instanceValue1 = new double[2];
+        instanceValue1[0] = instances.attribute(0).addStringValue(text);
+        instanceValue1[1] = instances.attribute(1).indexOfValue(textClass);
+        return new Instance(1.0,instanceValue1);
     }
 }

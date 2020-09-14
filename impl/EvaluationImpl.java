@@ -1,7 +1,7 @@
 package impl;
 
-import interfaces.Preprocessing;
 import interfaces.EvaluationModel;
+import interfaces.Preprocessing;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import model.Preprocessors;
@@ -9,7 +9,6 @@ import model.TCModel;
 import util.Utilities;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -62,7 +61,6 @@ public class EvaluationImpl implements EvaluationModel {
         }
         return null;
     }
-
     private String runCrossValidationOnInstances(TCModel model, Instances instances) {
         Evaluation eval = null;
         StringToWordVector filter = (StringToWordVector) model.getFilter();
@@ -76,6 +74,7 @@ public class EvaluationImpl implements EvaluationModel {
         }
         return eval.toSummaryString();
     }
+
 
     @Override
     public String evaluateModel(TCModel model, Preprocessors preprocessors, String dataSetFolderPath) {

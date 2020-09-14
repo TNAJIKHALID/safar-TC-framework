@@ -9,26 +9,32 @@ import safar.modern_standard_arabic.basic.morphology.stemmer.interfaces.IStemmer
 import safar.modern_standard_arabic.basic.morphology.stemmer.model.WordStemmerAnalysis;
 import safar.modern_standard_arabic.util.normalization.interfaces.INormalizer;
 import safar.modern_standard_arabic.util.splitting.interfaces.ISentenceSplitter;
+import safar.modern_standard_arabic.util.stop_words.interfaces.ISWsService;
 import safar.modern_standard_arabic.util.tokenization.interfaces.ITokenizer;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class PreprocessingImpl implements Preprocessing {
 
     @Override
     public String preprocessText(String text, Preprocessors preprocessors) {
-        text = preprocessors.isNormalize()? this.normalizeText(text,preprocessors.getNormalizer()) : text;
-        boolean splitSentences = preprocessors.isSplitSentences();
-        if(splitSentences){
+        text = preprocessors.isNormalize() ? this.normalizeText(text, preprocessors.getNormalizer()) : text;
+        text = preprocessors.isStem() ? this.stemText(text, preprocessors.getStemmer()) : text;
+        text = preprocessors.isTokenize() ? this.tokenizeText(text, preprocessors.getTokenizer()) : text;
+        text = preprocessors.isRemoveStopWords() ? this.removeStopWords(text, preprocessors.getWsService()) : text;
+        return text;
+    }
 
-        }else {
-
+    private String removeStopWords(String text, ISWsService wsService) {
+        String words[] = text.split(" ");
+        text = "";
+        for (int i = 0; i < words.length; i++) {
+            text = !wsService.isStopWord(words[i]) ? text + " " + words[i] : text;
         }
         return text;
     }
 
-    public String stemText(String text, IStemmer stemmer){
+    public String stemText(String text, IStemmer stemmer) {
         String textOut = "";
         List<WordStemmerAnalysis> wordStemmerAnalyses = stemmer.stem(text);
         for (WordStemmerAnalysis wordStemmerAnalysis : wordStemmerAnalyses) {

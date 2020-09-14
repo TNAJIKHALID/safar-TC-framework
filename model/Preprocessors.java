@@ -10,50 +10,97 @@ import safar.modern_standard_arabic.util.normalization.factory.NormalizerFactory
 import safar.modern_standard_arabic.util.normalization.interfaces.INormalizer;
 import safar.modern_standard_arabic.util.splitting.factory.SentenceSplitterFactory;
 import safar.modern_standard_arabic.util.splitting.interfaces.ISentenceSplitter;
+import safar.modern_standard_arabic.util.stop_words.factory.StopWordFactory;
+import safar.modern_standard_arabic.util.stop_words.interfaces.ISWsService;
 import safar.modern_standard_arabic.util.tokenization.factory.TokenizerFactory;
 import safar.modern_standard_arabic.util.tokenization.interfaces.ITokenizer;
-@Data @AllArgsConstructor
+
+/**
+ * Done
+ */
+@Data
+@AllArgsConstructor
 public class Preprocessors {
     private IStemmer stemmer;
     private ILemmatizer lemmatizer;
     private ISentenceSplitter sentenceSplitter;
     private INormalizer normalizer;
     private ITokenizer tokenizer;
+    private ISWsService wsService;
     private boolean stem = true;
     private boolean lemmatize = true;
     private boolean normalize = true;
     private boolean splitSentences = true;
-    public Preprocessors(){
+    private boolean removeStopWords = true;
+    private boolean tokenize = true;
+
+    public Preprocessors() {
         stemmer = StemmerFactory.getSAFARImplementation();
         lemmatizer = LemmatizerFactory.getFARASAImplementation();
         sentenceSplitter = SentenceSplitterFactory.getSAFARSentenceSplitterImplementation();
         normalizer = NormalizerFactory.getSAFARNormalizerImplementation();
         tokenizer = TokenizerFactory.getSAFARTokenizerImplementation();
+        wsService = StopWordFactory.getSWsImplementation();
     }
 
     Preprocessors stemmer(IStemmer stemmer){
         this.stemmer = stemmer;
         return this;
     }
-    Preprocessors lemmatizer(ILemmatizer lemmatizer){
+
+    Preprocessors lemmatizer(ILemmatizer lemmatizer) {
         this.lemmatizer = lemmatizer;
         return this;
     }
-    Preprocessors normalizer(INormalizer normalizer){
+
+    Preprocessors normalizer(INormalizer normalizer) {
         this.normalizer = normalizer;
         return this;
     }
-    Preprocessors tokenizer(ITokenizer tokenizer){
+
+    Preprocessors swService(ISWsService wsService) {
+        this.wsService = wsService;
+        return this;
+    }
+
+    Preprocessors tokenizer(ITokenizer tokenizer) {
         this.tokenizer = tokenizer;
         return this;
     }
-    Preprocessors sentenceSplitter(ISentenceSplitter sentenceSplitter){
+
+    Preprocessors sentenceSplitter(ISentenceSplitter sentenceSplitter) {
         this.sentenceSplitter = sentenceSplitter;
         return this;
     }
-    Preprocessors disableStemming(){this.stem = false;return this;}
-    Preprocessors disableLemmatization(){this.lemmatize = false;return this;}
-    Preprocessors disableNormalization(){this.normalize = false;return this;}
-    Preprocessors disableSentenceSpliting(){this.splitSentences = false;return this;}
+
+    Preprocessors disableStemming() {
+        this.stem = false;
+        return this;
+    }
+
+    Preprocessors disableLemmatization() {
+        this.lemmatize = false;
+        return this;
+    }
+
+    Preprocessors disableNormalization() {
+        this.normalize = false;
+        return this;
+    }
+
+    Preprocessors disableSentenceSplitting() {
+        this.splitSentences = false;
+        return this;
+    }
+
+    Preprocessors disableRemovingStopWords() {
+        this.removeStopWords = false;
+        return this;
+    }
+
+    Preprocessors disableTokenization() {
+        this.tokenize = false;
+        return this;
+    }
 
 }
