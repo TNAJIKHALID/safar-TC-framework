@@ -1,2 +1,2 @@
-# safar-TC-freamwork
+# safar-TC-framework
 NLP project
