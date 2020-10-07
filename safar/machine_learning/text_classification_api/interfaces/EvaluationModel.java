@@ -1,7 +1,7 @@
-package interfaces;
+package safar.machine_learning.text_classification_api.interfaces;
 
-import model.Preprocessors;
-import model.TCModel;
+import safar.machine_learning.text_classification_api.model.Preprocessors;
+import safar.machine_learning.text_classification_api.model.TCModel;
 
 public interface EvaluationModel {
     String evaluateModel(TCModel model, Preprocessors preprocessors, String dataSetFolderPath);

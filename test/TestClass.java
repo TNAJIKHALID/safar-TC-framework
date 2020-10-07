@@ -1,33 +1,31 @@
 package test;
 
-import impl.ModelGeneratorImp;
-import interfaces.ModelGenerator;
-import model.TCModel;
-import util.Utilities;
-import weka.core.Instances;
+import safar.machine_learning.text_classification_api.conf.LoggerConf;
+import safar.machine_learning.text_classification_api.impl.EvaluationImpl;
+import safar.machine_learning.text_classification_api.impl.ModelGeneratorImp;
+import safar.machine_learning.text_classification_api.interfaces.EvaluationModel;
+import safar.machine_learning.text_classification_api.interfaces.ModelGenerator;
+import safar.machine_learning.text_classification_api.model.Preprocessors;
+import safar.machine_learning.text_classification_api.model.TCModel;
 
-import java.util.Map;
-
+/**
+ * Done XX
+ */
 public class TestClass {
-    public static void main(String[] args) {
-        //dataTest();
+    public static void main(String[] args) throws Exception {
+        LoggerConf loggerConf = new LoggerConf();
+        Preprocessors preprocessors = new Preprocessors()
+                .disableLemmatization()
+                .disableRemovingStopWords()
+                //.disableStemming()
+                ;
         ModelGenerator modelGenerator = new ModelGeneratorImp();
-        TCModel model = modelGenerator.generateModel("");
-    }
-
-    private static void dataTest() {
-        //System.out.println("Hello word...");
-        String dataSetFolderPath = "C:\\Users\\khalid\\Documents\\safar projects\\data set\\text classification\\test";
-        String dataSetFolderPathOut = "C:\\Users\\khalid\\Documents\\safar projects\\data set\\text classification\\out";
-        Map<String, String[]> data = Utilities.getData(dataSetFolderPath);
-        for (Map.Entry<String, String[]> entry : data.entrySet()) {
-            System.out.println(entry.getKey());
-        }
-        //Utilities.saveData(dataSetFolderPathOut,data);
-        Instances instances = Utilities.getInstances(dataSetFolderPath);
-        System.out.println(instances.toString());
-        System.out.println("************************************");
-        instances = Utilities.getData(data);
-        System.out.println(instances.toString());
+        String dataSetFolderPath = "C:\\Users\\khalid\\Documents\\safar projects\\data set\\text classification\\test_arabic";
+        //classifier = new BR();
+        TCModel model = modelGenerator.generateModel(dataSetFolderPath, preprocessors);
+        EvaluationModel evaluationModel = new EvaluationImpl();
+        String results = evaluationModel.runCrossValidation(model, preprocessors, dataSetFolderPath);
+        System.out.println(results);
+        System.out.println("That's it...");
     }
 }

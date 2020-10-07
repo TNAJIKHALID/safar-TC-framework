@@ -1,7 +1,8 @@
-package impl;
+package safar.machine_learning.text_classification_api.impl;
 
-import interfaces.Preprocessing;
-import model.Preprocessors;
+import safar.machine_learning.text_classification_api.conf.LoggerConf;
+import safar.machine_learning.text_classification_api.interfaces.Preprocessing;
+import safar.machine_learning.text_classification_api.model.Preprocessors;
 import safar.modern_standard_arabic.basic.morphology.lemmatizer.interfaces.ILemmatizer;
 import safar.modern_standard_arabic.basic.morphology.lemmatizer.model.LemmatizerAnalysis;
 import safar.modern_standard_arabic.basic.morphology.lemmatizer.model.WordLemmatizerAnalysis;
@@ -12,9 +13,16 @@ import safar.modern_standard_arabic.util.splitting.interfaces.ISentenceSplitter;
 import safar.modern_standard_arabic.util.stop_words.interfaces.ISWsService;
 import safar.modern_standard_arabic.util.tokenization.interfaces.ITokenizer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PreprocessingImpl implements Preprocessing {
+    public static List<String> stopWords = new ArrayList<>();
+
+    public PreprocessingImpl() {
+        LoggerConf.logger.warn("Removing Strop words may slow down the speed");
+        LoggerConf.logger.warn("Lemmtization Strop words may slow down the speed");
+    }
 
     @Override
     public String preprocessText(String text, Preprocessors preprocessors) {
@@ -25,11 +33,18 @@ public class PreprocessingImpl implements Preprocessing {
         return text;
     }
 
-    private String removeStopWords(String text, ISWsService wsService) {
+    public String removeStopWords(String text, ISWsService wsService) {
         String words[] = text.split(" ");
         text = "";
         for (int i = 0; i < words.length; i++) {
-            text = !wsService.isStopWord(words[i]) ? text + " " + words[i] : text;
+            boolean stopWord;
+            if (!stopWords.contains(words[i])) {
+                stopWord = wsService.isStopWord(words[i]);
+                if (!stopWord) {
+                    text = text + " " + words[i];
+                    stopWords.add(words[i]);
+                }
+            }
         }
         return text;
     }
@@ -37,9 +52,12 @@ public class PreprocessingImpl implements Preprocessing {
     public String stemText(String text, IStemmer stemmer) {
         String textOut = "";
         List<WordStemmerAnalysis> wordStemmerAnalyses = stemmer.stem(text);
+        //System.out.println(wordStemmerAnalyses.toString());
         for (WordStemmerAnalysis wordStemmerAnalysis : wordStemmerAnalyses) {
-            textOut += " " + wordStemmerAnalyses.get(0).getListStemmerAnalysis().get(0).getMorpheme();
+            textOut += " " + wordStemmerAnalysis.getListStemmerAnalysis().get(0).getMorpheme();
         }
+        //System.out.println("**********************************************");
+        //System.out.println(textOut);
         return textOut;
     }
 

@@ -1,10 +1,10 @@
-package util;
+package safar.machine_learning.text_classification_api.util;
 
+import safar.machine_learning.text_classification_api.conf.LoggerConf;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.converters.TextDirectoryLoader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +20,7 @@ public abstract class Utilities {
      * @return
      */
     public static Map<String, String[]> getData(String dataSetFolderPath) {
+        LoggerConf.logger.info("Start Loading data...");
         Map<String, String[]> dataSet = new LinkedHashMap<>();
         File dir = new File(dataSetFolderPath);
         if (dir.isDirectory()) {
@@ -35,6 +36,7 @@ public abstract class Utilities {
         } else {
             return null;
         }
+        LoggerConf.logger.info("End Loading data...");
         return dataSet;
     }
 
@@ -46,6 +48,8 @@ public abstract class Utilities {
      */
     public static void saveData(String dataSetFolderPath, Map<String, String[]> dataSet) {
         File dir = new File(dataSetFolderPath);
+        LoggerConf.logger.info("Start Saving data in " + dir.getAbsolutePath());
+        LoggerConf.logger.warn("Any existing source with the same name will be replaced");
         if (!dir.isDirectory()) {
             dir.mkdir();
         }
@@ -60,6 +64,7 @@ public abstract class Utilities {
                 k++;
             }
         }
+        LoggerConf.logger.info("Saving data is completed");
     }
 
     /**
@@ -105,6 +110,7 @@ public abstract class Utilities {
      * @return
      */
     public static Instances getData(Map<String, String[]> data) {
+        LoggerConf.logger.info("Start Loading instances...");
         Instances instances;
         FastVector textClasses = new FastVector(data.size());
         for (Map.Entry<String, String[]> entry : data.entrySet()) {
@@ -112,12 +118,11 @@ public abstract class Utilities {
         }
         Attribute attributeClass = new Attribute("class", textClasses);
         Attribute attributeText = new Attribute("text", (FastVector) null);
-        // Create list of instances with one element
         FastVector fastVector = new FastVector(2);
         fastVector.addElement(attributeText);
         fastVector.addElement(attributeClass);
         instances = new Instances("relation", fastVector, 1);
-        instances.setClassIndex(0);
+        instances.setClassIndex(1);
         for (Map.Entry<String,String[]> entry : data.entrySet()) {
             for (String text : entry.getValue()) {
                 double[] instanceValue1 = new double[2];
@@ -126,7 +131,9 @@ public abstract class Utilities {
                 instances.add(new Instance(1.0, instanceValue1));
             }
         }
+        LoggerConf.logger.info("End Loading instances...");
         return instances;
+
     }
 
     /**
@@ -136,29 +143,45 @@ public abstract class Utilities {
      * @return
      */
     public static Instances getInstances(String dataSetFolderPath) {
+        LoggerConf.logger.info("Start Loading instances...");
         Instances instances = null;
-        TextDirectoryLoader loader = new TextDirectoryLoader();
+        /*TextDirectoryLoader loader = new TextDirectoryLoader();
         try {
             loader.setDirectory(new File(dataSetFolderPath));
             instances = loader.getDataSet();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        instances = getData(getData(dataSetFolderPath));
+        instances.setClassIndex(1);
+        LoggerConf.logger.info("End Loading instances...");
         return instances;
     }
 
     /**
-     * Done
+     * Donne
      *
-     * @param instances
+     * @param classes
      * @param text
-     * @param textClass
+     * @param classIndex
      * @return
      */
-    public static Instance getInstance(Instances instances, String text, String textClass) {
+    public static Instances getInstancesForSingleText(List<String> classes, String text, int classIndex) {
+        FastVector textClasses = new FastVector(classes.size());
+        for (String classValue : classes) {
+            textClasses.addElement(classValue);
+        }
+        Attribute attributeClass = new Attribute("class", textClasses);
+        Attribute attributeText = new Attribute("text", (FastVector) null);
+        FastVector fastVector = new FastVector(2);
+        fastVector.addElement(attributeText);
+        fastVector.addElement(attributeClass);
+        Instances instances = new Instances("relation", fastVector, 1);
+        instances.setClassIndex(1);
         double[] instanceValue1 = new double[2];
         instanceValue1[0] = instances.attribute(0).addStringValue(text);
-        instanceValue1[1] = instances.attribute(1).indexOfValue(textClass);
-        return new Instance(1.0,instanceValue1);
+        instanceValue1[1] = (double) textClasses.elementAt(classIndex);
+        instances.add(new Instance(1.0, instanceValue1));
+        return instances;
     }
 }

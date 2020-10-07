@@ -1,7 +1,7 @@
-package interfaces;
+package safar.machine_learning.text_classification_api.interfaces;
 
-import model.Preprocessors;
-import model.TCModel;
+import safar.machine_learning.text_classification_api.model.Preprocessors;
+import safar.machine_learning.text_classification_api.model.TCModel;
 import weka.core.Instances;
 
 public interface ModelGenerator {
@@ -13,9 +13,9 @@ public interface ModelGenerator {
 
     TCModel generateModel(String dataSetFolderPath, Preprocessors preprocessors);
 
-    void setModel(TCModel model, Preprocessors preprocessors, String dataSetFolderPath);
+    void buildModel(TCModel model, Preprocessors preprocessors, String dataSetFolderPath);
 
-    void setModel(TCModel model, String dataSetFolderPath, boolean preprocess);
+    void buildModel(TCModel model, String dataSetFolderPath, boolean preprocess);
 
     TCModel getModelFromInstances(Instances instances, TCModel model);
 }

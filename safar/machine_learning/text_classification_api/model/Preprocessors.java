@@ -1,4 +1,4 @@
-package model;
+package safar.machine_learning.text_classification_api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,7 +35,7 @@ public class Preprocessors {
     private boolean tokenize = true;
 
     public Preprocessors() {
-        stemmer = StemmerFactory.getSAFARImplementation();
+        stemmer = StemmerFactory.getKhojaImplementation();
         lemmatizer = LemmatizerFactory.getFARASAImplementation();
         sentenceSplitter = SentenceSplitterFactory.getSAFARSentenceSplitterImplementation();
         normalizer = NormalizerFactory.getSAFARNormalizerImplementation();
@@ -43,62 +43,62 @@ public class Preprocessors {
         wsService = StopWordFactory.getSWsImplementation();
     }
 
-    Preprocessors stemmer(IStemmer stemmer){
+    public Preprocessors stemmer(IStemmer stemmer) {
         this.stemmer = stemmer;
         return this;
     }
 
-    Preprocessors lemmatizer(ILemmatizer lemmatizer) {
+    public Preprocessors lemmatizer(ILemmatizer lemmatizer) {
         this.lemmatizer = lemmatizer;
         return this;
     }
 
-    Preprocessors normalizer(INormalizer normalizer) {
+    public Preprocessors normalizer(INormalizer normalizer) {
         this.normalizer = normalizer;
         return this;
     }
 
-    Preprocessors swService(ISWsService wsService) {
+    public Preprocessors swService(ISWsService wsService) {
         this.wsService = wsService;
         return this;
     }
 
-    Preprocessors tokenizer(ITokenizer tokenizer) {
+    public Preprocessors tokenizer(ITokenizer tokenizer) {
         this.tokenizer = tokenizer;
         return this;
     }
 
-    Preprocessors sentenceSplitter(ISentenceSplitter sentenceSplitter) {
+    public Preprocessors sentenceSplitter(ISentenceSplitter sentenceSplitter) {
         this.sentenceSplitter = sentenceSplitter;
         return this;
     }
 
-    Preprocessors disableStemming() {
+    public Preprocessors disableStemming() {
         this.stem = false;
         return this;
     }
 
-    Preprocessors disableLemmatization() {
+    public Preprocessors disableLemmatization() {
         this.lemmatize = false;
         return this;
     }
 
-    Preprocessors disableNormalization() {
+    public Preprocessors disableNormalization() {
         this.normalize = false;
         return this;
     }
 
-    Preprocessors disableSentenceSplitting() {
+    public Preprocessors disableSentenceSplitting() {
         this.splitSentences = false;
         return this;
     }
 
-    Preprocessors disableRemovingStopWords() {
+    public Preprocessors disableRemovingStopWords() {
         this.removeStopWords = false;
         return this;
     }
 
-    Preprocessors disableTokenization() {
+    public Preprocessors disableTokenization() {
         this.tokenize = false;
         return this;
     }

@@ -1,12 +1,13 @@
-package impl;
+package safar.machine_learning.text_classification_api.impl;
 
-import interfaces.EvaluationModel;
-import interfaces.Preprocessing;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import model.Preprocessors;
-import model.TCModel;
-import util.Utilities;
+import safar.machine_learning.text_classification_api.conf.LoggerConf;
+import safar.machine_learning.text_classification_api.interfaces.EvaluationModel;
+import safar.machine_learning.text_classification_api.interfaces.Preprocessing;
+import safar.machine_learning.text_classification_api.model.Preprocessors;
+import safar.machine_learning.text_classification_api.model.TCModel;
+import safar.machine_learning.text_classification_api.util.Utilities;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
@@ -14,6 +15,8 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.util.Random;
+
+
 
 @Data @AllArgsConstructor
 public class EvaluationImpl implements EvaluationModel {
@@ -24,6 +27,7 @@ public class EvaluationImpl implements EvaluationModel {
 
     private String runTrainTestSplitOnInstances(TCModel model, Instances instances) {
         String trainResults = null, testResults = null;
+        LoggerConf.logger.info("Start train test split on instances...");
         try {
             instances.setClassIndex(0);
             instances.randomize(new java.util.Random());
@@ -46,6 +50,7 @@ public class EvaluationImpl implements EvaluationModel {
     }
     private String evaluateInstances(TCModel model, Instances instances) {
         String evalResults = null;
+        LoggerConf.logger.info("Start evaluating instances...");
         try {
             instances.setClassIndex(0);
             instances.randomize(new Random());
@@ -59,10 +64,11 @@ public class EvaluationImpl implements EvaluationModel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return evalResults;
     }
     private String runCrossValidationOnInstances(TCModel model, Instances instances) {
         Evaluation eval = null;
+        LoggerConf.logger.info("Start cross-validation on instances...");
         StringToWordVector filter = (StringToWordVector) model.getFilter();
         try {
             filter.setInputFormat(instances);
@@ -91,13 +97,18 @@ public class EvaluationImpl implements EvaluationModel {
     @Override
     public String runCrossValidation(TCModel model, Preprocessors preprocessors, String dataSetFolderPath) {
         Instances instances = preprocessing.preprocess(dataSetFolderPath, preprocessors);
+        //System.out.println(instances);
         return runCrossValidationOnInstances(model,instances);
     }
 
     @Override
     public String runCrossValidation(TCModel model, String dataSetFolderPath, boolean preprocess) {
-        if(preprocess) return runCrossValidation(model, new Preprocessors(),dataSetFolderPath);
-        else return runCrossValidationOnInstances(model, Utilities.getInstances(dataSetFolderPath));
+        if (preprocess) return runCrossValidation(model, new Preprocessors(), dataSetFolderPath);
+        else {
+            Instances instances = Utilities.getInstances(dataSetFolderPath);
+            //System.out.println(instances);
+            return runCrossValidationOnInstances(model, instances);
+        }
     }
 
     @Override
